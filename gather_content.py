@@ -4,7 +4,7 @@ from pathlib import Path
 
 EXCLUDED_DIRS = {
     'node_modules', 'dist', '.git', '.vite', 
-    'cache', 'build', '__pycache__'
+    'cache', 'build', '__pycache__', '.next'
 }
 
 EXCLUDED_FILES = {

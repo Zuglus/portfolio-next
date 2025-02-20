@@ -352,6 +352,272 @@ export default nextConfig;
 User-agent: *
 Allow: /
 ==================================================
+Файл: src/types/project.ts
+==================================================
+
+// src/types/project.ts
+
+/**
+ * Описывает отдельный слайд в проекте
+ */
+export interface Slide {
+    /** URL изображения слайда */
+    image: string;
+    /** Описание задачи для слайда (опционально) */
+    task?: string;
+    /** Описание решения для слайда (опционально) */
+    solution?: string;
+  }
+  
+  /**
+   * Описывает проект в портфолио
+   */
+  export interface Project {
+    /** Уникальный идентификатор проекта */
+    id: string;
+    /** Название проекта */
+    title: string;
+    /** Описание проекта */
+    description: string;
+    /** Целевая аудитория проекта (опционально) */
+    audience?: string;
+    /** Массив слайдов проекта */
+    slides: Slide[];
+  }
+  
+  /**
+   * Типы для карточки проекта в портфолио
+   */
+  export interface PortfolioCardProps {
+    /** Данные проекта для карточки */
+    project: {
+      id: string;
+      image: string;
+      alt: string;
+    };
+    /** Обработчик клика по карточке */
+    onClick: (id: string) => void;
+  }
+  
+  /**
+   * Состояние модального окна
+   */
+  export interface ModalState {
+    /** Флаг открытия модального окна */
+    isOpen: boolean;
+    /** Текущий отображаемый проект */
+    currentProject: Project | null;
+    /** Индекс текущего слайда */
+    currentSlideIndex: number;
+  }
+  
+  /**
+   * Действия с модальным окном
+   */
+  export interface ModalActions {
+    /** Открыть модальное окно с проектом */
+    openModal: (id: string, project: Project) => void;
+    /** Закрыть модальное окно */
+    closeModal: () => void;
+    /** Установить конкретный слайд */
+    setSlide: (index: number) => void;
+    /** Перейти к следующему слайду */
+    nextSlide: () => void;
+    /** Перейти к предыдущему слайду */
+    prevSlide: () => void;
+  }
+  
+  /**
+   * Состояние навигации по слайдам
+   */
+  export interface NavigationState {
+    /** Индекс текущего слайда */
+    currentSlideIndex: number;
+    /** Общее количество слайдов */
+    totalSlides: number;
+    /** Направление навигации ('left' | 'right' | 'none') */
+    direction: 'left' | 'right' | 'none';
+  }
+  
+  /**
+   * Действия навигации
+   */
+  export interface NavigationActions {
+    /** Установить общее количество слайдов */
+    setTotalSlides: (total: number) => void;
+    /** Перейти к следующему слайду */
+    nextSlide: () => void;
+    /** Перейти к предыдущему слайду */
+    prevSlide: () => void;
+    /** Сбросить состояние навигации */
+    reset: () => void;
+  }
+  
+  /**
+   * Состояние загрузки изображения
+   */
+  export type ImageLoadStatus = 'init' | 'loading' | 'loaded' | 'error' | 'retrying';
+  
+  /**
+   * Параметры для предзагрузки изображений
+   */
+  export interface PreloadOptions {
+    /** Количество одновременных загрузок */
+    concurrency?: number;
+    /** Приоритет загрузки */
+    priority?: boolean;
+  }
+  
+  /**
+   * Утилитарные типы
+   */
+  export type RequireAtLeastOne<T> = {
+    [K in keyof T]-?: Required<Pick<T, K>> & Partial<Pick<T, Exclude<keyof T, K>>>;
+  }[keyof T];
+==================================================
+Файл: src/types/components.ts
+==================================================
+
+// src/types/components.ts
+
+import { Project, Slide } from './project';
+
+/**
+ * Пропсы для компонента изображения
+ */
+export interface ImageProps {
+  /** URL изображения */
+  src: string;
+  /** Альтернативный текст */
+  alt: string;
+  /** Дополнительные CSS классы */
+  className?: string;
+  /** Приоритет загрузки */
+  priority?: boolean;
+}
+
+/**
+ * Пропсы для компонента скелетона
+ */
+export interface SkeletonProps {
+  /** Дополнительные CSS классы */
+  className?: string;
+  /** Вариант отображения */
+  variant?: 'default' | 'circle' | 'text';
+  /** Тип анимации */
+  animation?: 'pulse' | 'wave' | 'none';
+}
+
+/**
+ * Пропсы для модального окна проекта
+ */
+export interface ProjectModalProps {
+  /** Данные проекта */
+  project: Project;
+  /** Обработчик закрытия */
+  onClose: () => void;
+}
+
+/**
+ * Пропсы для заголовка модального окна
+ */
+export interface ModalHeaderProps {
+  /** Данные проекта */
+  project: Project;
+}
+
+/**
+ * Пропсы для слайдера
+ */
+export interface ModalSliderProps {
+  /** Массив слайдов */
+  slides: Slide[];
+}
+
+/**
+ * Пропсы для кнопок навигации
+ */
+export interface NavigationButtonsProps {
+  /** Обработчик навигации */
+  onNavigate: (direction: 'next' | 'prev') => void;
+  /** Флаг блокировки */
+  disabled?: boolean;
+}
+
+/**
+ * Пропсы для слайдера изображений
+ */
+export interface SliderImageProps extends ImageProps {
+  /** Индекс текущего слайда */
+  index: number;
+}
+
+/**
+ * Пропсы для секции портфолио
+ */
+export interface PortfolioSectionProps {
+  /** Обработчик клика по карточке */
+  onCardClick: (id: string) => void;
+}
+
+/**
+ * Пропсы для секции резюме
+ */
+export interface ExperienceItemProps {
+  /** Данные об опыте работы */
+  experience: {
+    /** Год или период работы */
+    year: string;
+    /** Название компании */
+    company: string;
+    /** Должность */
+    position: string;
+    /** Обязанности */
+    duties: string[];
+    /** URL изображения для декоративного круга (опционально) */
+    circleImage?: string;
+  };
+}
+==================================================
+Файл: src/types/index.ts
+==================================================
+
+// src/types/index.ts
+
+export * from './project';
+export * from './components';
+
+// Общие утилитарные типы
+export type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
+};
+
+export type ValueOf<T> = T[keyof T];
+
+export type NonEmptyArray<T> = [T, ...T[]];
+
+// Типы для стилей
+export interface StylesConfig {
+  CARD_STYLES: {
+    CONTAINER: string;
+    IMAGE: string;
+  };
+  SECTION_STYLES: {
+    CONTAINER: string;
+    HEADER_WRAPPER: string;
+    DECORATION: string;
+    DECORATION_IMAGE: string;
+    TITLE: string;
+    GRID: string;
+  };
+  IMAGE_STYLES: {
+    CONTAINER: string;
+    SKELETON: string;
+    ERROR: string;
+    IMAGE: string;
+  };
+}
+==================================================
 Файл: src/styles/globals.css
 ==================================================
 
